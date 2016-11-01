@@ -1,7 +1,8 @@
 var webpack = require('webpack'),
     path = require('path'),
     HtmlWebpackPlugin = require("html-webpack-plugin"),
-    BrowserSyncPlugin = require('browser-sync-webpack-plugin');
+    BrowserSyncPlugin = require('browser-sync-webpack-plugin'),
+    ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 module.exports = {
     debug: true,
@@ -16,18 +17,26 @@ module.exports = {
         loaders: [
             {
                 test: /\.scss$/,
-                loaders: ['style', 'css', 'sass']
+                loader: ExtractTextPlugin.extract(
+                    'style',
+                    'css!sass'
+                )
             },
-            { test: /\.woff(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&minetype=application/font-woff" },
-            { test: /\.woff2(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&minetype=application/font-woff" },
-            { test: /\.ttf(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&minetype=application/octet-stream" },
-            { test: /\.eot(\?v=\d+\.\d+\.\d+)?$/, loader: "file" },
-            { test: /\.svg(\?v=\d+\.\d+\.\d+)?$/, loader: "url?limit=10000&minetype=image/svg+xml" }
+            {
+                test: /\.(png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot)$/,
+                loader: "file",
+            }
         ]
     },
     plugins: [
         new HtmlWebpackPlugin({
-            template: "index.html"
+            template: "html!./index.html"
+        }),
+        new ExtractTextPlugin('styles.css'),
+        new webpack.ProvidePlugin({
+            jQuery: 'jquery',
+            $: 'jquery',
+            jquery: 'jquery'
         }),
         new BrowserSyncPlugin({
             host: 'localhost',
